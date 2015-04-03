@@ -1,6 +1,7 @@
 package com.hutchind.cordova.plugins.streamingmedia;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,13 +58,11 @@ public class StreamingMedia extends CordovaPlugin {
 	private boolean play(final Class activityClass, final String url, final JSONObject options) {
 		final CordovaInterface cordovaObj = cordova;
 		final CordovaPlugin plugin = this;
-
 		cordova.getActivity().runOnUiThread(new Runnable() {
 			public void run() {
 				final Intent streamIntent = new Intent(cordovaObj.getActivity().getApplicationContext(), activityClass);
 				Bundle extras = new Bundle();
 				extras.putString("mediaUrl", url);
-
 				if (options != null) {
 					Iterator<String> optKeys = options.keys();
 					while (optKeys.hasNext()) {
@@ -95,7 +94,11 @@ public class StreamingMedia extends CordovaPlugin {
 		super.onActivityResult(requestCode, resultCode, intent);
 		if (ACTIVITY_CODE_PLAY_MEDIA == requestCode) {
 			if (Activity.RESULT_OK == resultCode) {
-				this.callbackContext.success();
+                String successMsg = "Success";
+                if (intent != null && intent.hasExtra("message")) {
+                    successMsg = intent.getStringExtra("message");
+                }
+				this.callbackContext.success(successMsg);
 			} else if (Activity.RESULT_CANCELED == resultCode) {
 				String errMsg = "Error";
 				if (intent != null && intent.hasExtra("message")) {

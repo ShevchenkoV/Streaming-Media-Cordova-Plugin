@@ -19,6 +19,7 @@ import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.VideoView;
+//import 	android.widget.Toast;
 
 public class SimpleVideoStream extends Activity implements
 	MediaPlayer.OnCompletionListener, MediaPlayer.OnPreparedListener,
@@ -30,6 +31,9 @@ public class SimpleVideoStream extends Activity implements
 	private ProgressBar mProgressBar = null;
 	private String mVideoUrl;
 	private Boolean mShouldAutoClose = true;
+
+    private long startTime=0;
+    private long endTime=0;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -105,6 +109,7 @@ public class SimpleVideoStream extends Activity implements
 		mMediaPlayer.setOnBufferingUpdateListener(this);
 		mVideoView.requestFocus();
 		mVideoView.start();
+		startTime = System.currentTimeMillis();  //getStart time
 		mVideoView.postDelayed(checkIfPlaying, 0);
 	}
 
@@ -133,8 +138,12 @@ public class SimpleVideoStream extends Activity implements
 
 	public void onCompletion(MediaPlayer mp) {
 		stop();
+		            endTime=System.currentTimeMillis();
+                    endTime=endTime-startTime;
+		StringBuilder sb = new StringBuilder();
+		sb.append(endTime);
 		if (mShouldAutoClose) {
-			wrapItUp(RESULT_OK, null);
+			wrapItUp(RESULT_OK, sb.toString());
 		}
 	}
 
@@ -170,15 +179,25 @@ public class SimpleVideoStream extends Activity implements
 
 	@Override
 	public void onBackPressed() {
+	        endTime=System.currentTimeMillis();
+            endTime=endTime-startTime;
+			StringBuilder sb = new StringBuilder();
+    		sb.append(endTime);
 		// If we're leaving, let's finish the activity
-		wrapItUp(RESULT_OK, null);
+		wrapItUp(RESULT_OK, sb.toString());
 	}
 
+/*
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// The screen size changed or the orientation changed... don't restart the activity
-		super.onConfigurationChanged(newConfig);
+		//super.onConfigurationChanged(newConfig);
+		    // Checks the orientation of the screen
+		  // if (newConfig.orientation != Configuration.ORIENTATION_PORTRAIT) {
+               super.onConfigurationChanged(newConfig);
+           }
 	}
+*/
 
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
